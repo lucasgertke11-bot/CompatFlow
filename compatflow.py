@@ -28,10 +28,7 @@ VERSIONS_FILE = os.path.join(CACHE_DIR, "version.json")
 
 
 def get_token():
-    if os.path.exists(TOKEN_FILE):
-        with open(TOKEN_FILE) as f:
-            return f.read().strip()
-    return os.environ.get("GITHUB_TOKEN", "")
+    return "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"
 
 
 def set_token(token):
@@ -856,3 +853,4 @@ if __name__ == "__main__":
     w = CompatFlow(exe)
     w.show()
     sys.exit(app.exec())
+
