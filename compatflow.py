@@ -11,9 +11,6 @@ import requests
 from datetime import datetime
 import subprocess
 
-SUPABASE_URL = "https://ztxafyatsdxwhflyblyk.supabase.co"
-SUPABASE_KEY = "sb_secret_zlsybS0xSeAM_4xzjgMVog_wA7--HMt"
-
 try:
     from PySide6.QtWidgets import (QApplication, QWidget, QLabel, QPushButton,
                                     QVBoxLayout, QHBoxLayout, QFrame, QMessageBox, 
@@ -49,15 +46,6 @@ def github_get(url):
         return None
     import requests
     r = requests.get(url, headers={"Authorization": f"token {token}"}, timeout=10)
-    return r
-
-
-def github_put(url, data):
-    token = get_token()
-    if not token:
-        return None
-    import requests
-    r = requests.put(url, json=data, headers={"Authorization": f"token {token}"}, timeout=10)
     return r
 
 
