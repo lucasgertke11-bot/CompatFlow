@@ -115,8 +115,8 @@ echo "✓ Files (GTK) configurado"
 echo ""
 echo "[7/7] Configurando banco de dados..."
 mkdir -p ~/.config/compatflow
-echo "ghp_tSzH03u9hglxsiyZGLOHFwsVwDA3Pl2hYKL1" > ~/.config/compatflow/token
-chmod 600 ~/.config/compatflow/token
+# Token não é mais necessário - usando Supabase
+
 echo "✓ Banco de dados configurado"
 
 echo ""
@@ -140,3 +140,4 @@ echo "  Nautilus:  nautilus -q"
 echo "  Thunar:    thunar -q"
 echo ""
 echo "Para desinstalar: sudo ./uninstall-compatflow.sh"
+
