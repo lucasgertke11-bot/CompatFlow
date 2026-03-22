@@ -12,7 +12,8 @@ import subprocess
 
 try:
     from PySide6.QtWidgets import (QApplication, QWidget, QLabel, QPushButton,
-                                    QVBoxLayout, QHBoxLayout, QFrame, QMessageBox, QInputDialog)
+                                    QVBoxLayout, QHBoxLayout, QFrame, QMessageBox, 
+                                    QInputDialog, QDialog, QTextEdit)
     from PySide6.QtCore import Qt
 except:
     print("PySide6 necessário: pip3 install PySide6")
@@ -27,16 +28,10 @@ VERSIONS_FILE = os.path.join(CACHE_DIR, "version.json")
 
 
 def get_token():
-    os.makedirs(CACHE_DIR, exist_ok=True)
     if os.path.exists(TOKEN_FILE):
         with open(TOKEN_FILE) as f:
             return f.read().strip()
-    token = os.environ.get("GITHUB_TOKEN", "")
-    if token:
-        with open(TOKEN_FILE, "w") as f:
-            f.write(token)
-        return token
-    return ""
+    return os.environ.get("GITHUB_TOKEN", "")
 
 
 def set_token(token):
@@ -64,34 +59,328 @@ def github_put(url, data):
 
 
 NATIVE = {
-    "steam": ("Steam", "steam", "Plataforma de jogos"),
-    "discord": ("Discord", "discord", "Chat para gamers"),
-    "spotify": ("Spotify", "spotify", "Streaming de música"),
-    "telegram": ("Telegram", "telegram-desktop", "Mensagens"),
+    # NAVEGADORES
     "firefox": ("Firefox", "firefox", "Navegador"),
     "chrome": ("Chrome", "google-chrome-stable", "Navegador"),
     "edge": ("Edge", "microsoft-edge-stable", "Navegador"),
     "opera": ("Opera", "opera", "Navegador"),
     "brave": ("Brave", "brave-browser", "Navegador"),
-    "vlc": ("VLC", "vlc", "Reprodutor de mídia"),
-    "gimp": ("GIMP", "gimp", "Editor de imagens"),
-    "vscode": ("VS Code", "code", "Editor de código"),
-    "code": ("VS Code", "code", "Editor de código"),
-    "obs": ("OBS", "obs-studio", "Gravação"),
-    "libreoffice": ("LibreOffice", "libreoffice", "Escritório"),
-    "qbittorrent": ("qBittorrent", "qbittorrent", "Torrent"),
-    "filezilla": ("FileZilla", "filezilla", "FTP"),
-    "git": ("Git", "git", "Controle de versão"),
-    "audacity": ("Audacity", "audacity", "Editor de áudio"),
-    "virtualbox": ("VirtualBox", "virtualbox", "Virtualização"),
-    "minecraft": ("Minecraft", "minecraft-launcher", "Jogo"),
-    "epic": ("Epic Games", "heroic-games-launcher-bin", "Epic Games"),
-    "gog": ("GOG Galaxy", "heroic-games-launcher-bin", "GOG"),
-    "teamspeak": ("TeamSpeak", "teamspeak3", "Voz"),
+    "vivaldi": ("Vivaldi", "vivaldi", "Navegador"),
+    "chromium": ("Chromium", "chromium", "Navegador"),
+    "maxthon": ("Maxthon", "maxthon", "Navegador"),
+    "palemoon": ("Pale Moon", "palemoon", "Navegador"),
+    "falkon": ("Falkon", "falkon", "Navegador"),
+    "epiphany": ("Epiphany", "epiphany", "Navegador GNOME"),
+    "konqueror": ("Konqueror", "konqueror", "Navegador KDE"),
+    
+    # COMUNICAÇÃO / MENSAGENS
+    "discord": ("Discord", "discord", "Chat para gamers"),
+    "telegram": ("Telegram", "telegram-desktop", "Mensagens"),
     "skype": ("Skype", "skypeforlinux", "Videochamadas"),
     "zoom": ("Zoom", "zoom", "Videochamadas"),
-    "winrar": ("7-Zip", "p7zip-full", "Compactador"),
+    "slack": ("Slack", "slack-desktop", "Trabalho"),
+    "teams": ("Microsoft Teams", "teams", "Trabalho"),
+    "signal": ("Signal", "signal-desktop", "Mensagens seguras"),
+    "whatsapp": ("WhatsApp", "whatsapp-for-linux", "Mensagens"),
+    "thunderbird": ("Thunderbird", "thunderbird", "Email"),
+    "evolution": ("Evolution", "evolution", "Email/Calendário"),
+    "geary": ("Geary", "geary", "Email GNOME"),
+    "mumble": ("Mumble", "mumble", "Voz para jogos"),
+    "vesktop": ("Vesktop", "vesktop", "Discord customizado"),
+    
+    # STREAMING / MÚSICA / VÍDEO
+    "spotify": ("Spotify", "spotify", "Streaming de música"),
+    "vlc": ("VLC", "vlc", "Reprodutor de mídia"),
+    "mpv": ("MPV", "mpv", "Reprodutor de mídia"),
+    "celluloid": ("Celluloid", "celluloid", "Reprodutor GNOME"),
+    "smplayer": ("SMPlayer", "smplayer", "Reprodutor"),
+    "kodi": ("Kodi", "kodi", "Media Center"),
+    "plex": ("Plex", "plex-media-server", "Media Server"),
+    "jellyfin": ("Jellyfin", "jellyfin", "Media Server"),
+    "emby": ("Emby", "emby-server", "Media Server"),
+    "strawberry": ("Strawberry", "strawberry", "Player música"),
+    "rhythmbox": ("Rhythmbox", "rhythmbox", "Player música"),
+    "audacious": ("Audacious", "audacious", "Player música"),
+    "clementine": ("Clementine", "clementine", "Player música"),
+    "deadbeef": ("DeaDBeeF", "deadbeef", "Player música"),
+    
+    # JOGOS / GAMING
+    "steam": ("Steam", "steam", "Plataforma de jogos"),
+    "epic": ("Epic Games", "heroic-games-launcher-bin", "Epic Games"),
+    "gog": ("GOG Galaxy", "heroic-games-launcher-bin", "GOG"),
+    "lutris": ("Lutris", "lutris", "Gerenciador de jogos"),
+    "minecraft": ("Minecraft", "minecraft-launcher", "Jogo"),
+    "minetest": ("Minetest", "minetest", "Jogo open source"),
+    "superTuxKart": ("SuperTuxKart", "supertuxkart", "Jogo"),
+    "xonotic": ("Xonotic", "xonotic", "Jogo FPS"),
+    "warzone2100": ("Warzone 2100", "warzone2100", "Jogo RTS"),
+    "openTTD": ("OpenTTD", "openttd", "Jogo simulação"),
+    "openttd": ("OpenTTD", "openttd", "Jogo simulação"),
+    "flightgear": ("FlightGear", "flightgear", "Simulador de voo"),
+    "neverball": ("Neverball", "neverball", "Jogo"),
+    
+    # ESCRITÓRIO / PRODUTIVIDADE
+    "libreoffice": ("LibreOffice", "libreoffice", "Escritório completo"),
+    "onlyoffice": ("OnlyOffice", "onlyoffice-desktopeditors", "Escritório"),
+    "wps": ("WPS Office", "wps-office", "Escritório"),
+    "softmaker": ("SoftMaker Office", "softmaker-freeoffice", "Escritório"),
+    "calligra": ("Calligra Suite", "calligra", "Escritório KDE"),
+    "appimagehub": ("AppImageHub", "appimagehub", "Loja de apps"),
+    "notion": ("Notion", "notion-app", "Notas"),
+    "obsidian": ("Obsidian", "obsidian", "Notas Markdown"),
+    "ticktick": ("TickTick", "ticktick", "Tarefas"),
+    "todoist": ("Todoist", "todoist", "Tarefas"),
+    "evernote": ("Evernote", "evernote", "Notas"),
+    "joplin": ("Joplin", "joplin", "Notas"),
+    "zettlr": ("Zettlr", "zettlr", "Editor Markdown"),
+    "marktext": ("MarkText", "marktext", "Editor Markdown"),
+    
+    # EDITOR DE CÓDIGO / IDE
+    "vscode": ("VS Code", "code", "Editor de código"),
+    "vscodium": ("VSCodium", "vscodium", "Editor de código"),
+    "sublime": ("Sublime Text", "sublime-text", "Editor de texto"),
+    "gedit": ("gedit", "gedit", "Editor GNOME"),
+    "kate": ("Kate", "kate", "Editor KDE"),
+    "atom": ("Atom", "atom", "Editor GitHub"),
+    "brackets": ("Brackets", "brackets", "Editor web"),
+    "geany": ("Geany", "geany", "Editor leve"),
+    "pluma": ("Pluma", "pluma", "Editor MATE"),
+    "mousepad": ("Mousepad", "mousepad", "Editor XFCE"),
+    "notepadqq": ("Notepadqq", "notepadqq", "Alternativa Notepad++"),
+    "codeblocks": ("Code::Blocks", "codeblocks", "IDE C/C++"),
+    "eclipse": ("Eclipse", "eclipse", "IDE Java"),
+    "intellij": ("IntelliJ IDEA", "intellij-idea-community", "IDE Java/Kotlin"),
+    "clion": ("CLion", "clion", "IDE C/C++"),
+    "pycharm": ("PyCharm", "pycharm-community", "IDE Python"),
+    "rider": ("Rider", "rider", "IDE .NET"),
+    "goland": ("GoLand", "goland", "IDE Go"),
+    "phpstorm": ("PHPStorm", "phpstorm", "IDE PHP"),
+    "rubymine": ("RubyMine", "rubymine", "IDE Ruby"),
+    "webstorm": ("WebStorm", "webstorm", "IDE JavaScript"),
+    "datagrip": ("DataGrip", "datagrip", "IDE Database"),
+    
+    # DESIGN / IMAGENS / FOTOS
+    "gimp": ("GIMP", "gimp", "Editor de imagens"),
+    "inkscape": ("Inkscape", "inkscape", "Editor vetorial"),
+    "blender": ("Blender", "blender", "3D"),
+    "krita": ("Krita", "krita", "Pintura digital"),
+    "scribus": ("Scribus", "scribus", "Editoração"),
+    "darktable": ("Darktable", "darktable", "Fotografia RAW"),
+    "rawtherapee": ("RawTherapee", "rawtherapee", "Fotografia RAW"),
+    "digikam": ("DigiKam", "digikam", "Gerenciador fotos"),
+    "gwenview": ("Gwenview", "gwenview", "Visualizador KDE"),
+    "eog": ("Eye of GNOME", "eog", "Visualizador GNOME"),
+    "nomacs": ("Nomacs", "nomacs", "Visualizador"),
+    "imagemagick": ("ImageMagick", "imagemagick", "CLI imagens"),
+    "shotwell": ("Shotwell", "shotwell", "Gerenciador fotos"),
+    "kolourpaint": ("KolourPaint", "kolourpaint", "Pintura KDE"),
+    "digiKam": ("digiKam", "digikam", "Fotos"),
+    
+    # VÍDEO / STREAMING / GRAVAÇÃO
+    "obs": ("OBS Studio", "obs-studio", "Gravação/Streaming"),
+    "kdenlive": ("Kdenlive", "kdenlive", "Editor de vídeo"),
+    "ffmpeg": ("FFmpeg", "ffmpeg", "Conversão de mídia"),
+    "handbrake": ("HandBrake", "handbrake", "Conversor vídeo"),
+    "avidemux": ("Avidemux", "avidemux", "Editor de vídeo"),
+    "pitivi": ("PiTiVi", "pitivi", "Editor de vídeo GNOME"),
+    "openshot": ("OpenShot", "openshot", "Editor de vídeo"),
+    "shotcut": ("Shotcut", "shotcut", "Editor de vídeo"),
+    "kazam": ("Kazam", "kazam", "Gravador de tela"),
+    "peek": ("Peek", "peek", "GIF screencast"),
+    "byzanz": ("Byzanz", "byzanz", "GIF screencast"),
+    "vokoscreen": ("VokoSscreen", "vokoscreen", "Gravador de tela"),
+    "simpleScreenRecorder": ("SimpleScreenRecorder", "simplescreenrecorder", "Gravador"),
+    "miro": ("Miro", "miro", "Vídeo"),
+    "daVinci": ("DaVinci Resolve", "davinci-resolve", "Editor profissional"),
+    "davinci": ("DaVinci Resolve", "davinci-resolve", "Editor profissional"),
+    "audacity": ("Audacity", "audacity", "Editor de áudio"),
+    
+    # REDE / INTERNET / FTP
+    "filezilla": ("FileZilla", "filezilla", "FTP"),
+    "cyberduck": ("Cyberduck", "cyberduck", "FTP/S3"),
+    "nautilus": ("Nautilus", "nautilus", "Gerenciador GNOME"),
+    "dolphin": ("Dolphin", "dolphin", "Gerenciador KDE"),
+    "thunar": ("Thunar", "thunar", "Gerenciador XFCE"),
+    "nemo": ("Nemo", "nemo", "Gerenciador Cinnamon"),
+    "pcmanfm": ("PCManFM", "pcmanfm", "Gerenciador LXDE"),
+    "qbt": ("qBittorrent", "qbittorrent", "Torrent"),
+    "qbittorrent": ("qBittorrent", "qbittorrent", "Torrent"),
+    "deluge": ("Deluge", "deluge", "Torrent"),
+    "transmission": ("Transmission", "transmission-gtk", "Torrent"),
+    "ktorrent": ("KTorrent", "ktorrent", "Torrent KDE"),
+    "amule": ("aMule", "amule", "eDonkey"),
+    
+    # DESENVOLVIMENTO / DEV TOOLS
+    "git": ("Git", "git", "Controle de versão"),
+    "docker": ("Docker", "docker", "Containerização"),
+    "postman": ("Postman", "postman", "API Testing"),
+    "insomnia": ("Insomnia", "insomnia", "API Testing"),
+    "curl": ("cURL", "curl", "HTTP CLI"),
+    "wget": ("Wget", "wget", "Download CLI"),
+    "ssh": ("OpenSSH", "openssh", "SSH"),
+    "putty": ("PuTTY", "putty", "SSH/Telnet"),
+    "terminator": ("Terminator", "terminator", "Terminal"),
+    "guake": ("Guake", "guake", "Terminal dropdown"),
+    "tilix": ("Tilix", "tilix", "Terminal tiling"),
+    "kitty": ("Kitty", "kitty", "Terminal GPU"),
+    "alacritty": ("Alacritty", "alacritty", "Terminal GPU"),
+    "tmux": ("Tmux", "tmux", "Terminal multiplexador"),
+    "screen": ("Screen", "screen", "Terminal multiplexador"),
+    "ansible": ("Ansible", "ansible", "Automação"),
+    "vagrant": ("Vagrant", "vagrant", "Dev environments"),
+    "gradle": ("Gradle", "gradle", "Build tool"),
+    "maven": ("Maven", "maven", "Build tool"),
+    "cmake": ("CMake", "cmake", "Build system"),
+    "make": ("Make", "make", "Build tool"),
+    "gcc": ("GCC", "gcc", "Compilador"),
+    "clang": ("Clang", "clang", "Compilador"),
+    "rustc": ("Rust", "rustc", "Linguagem"),
+    "go": ("Go", "go", "Linguagem"),
+    "python": ("Python", "python3", "Linguagem"),
+    "nodejs": ("Node.js", "nodejs", "Runtime JS"),
+    "npm": ("NPM", "npm", "Gerenciador pacotes JS"),
+    "yarn": ("Yarn", "yarn", "Gerenciador pacotes JS"),
+    
+    # SERVIDORES / BANCO DE DADOS
+    "mysql": ("MySQL", "mysql", "Banco de dados"),
+    "mariadb": ("MariaDB", "mariadb", "Banco de dados"),
+    "postgresql": ("PostgreSQL", "postgresql", "Banco de dados"),
+    "sqlite": ("SQLite", "sqlite3", "Banco de dados"),
+    "mongodb": ("MongoDB", "mongodb", "Banco NoSQL"),
+    "redis": ("Redis", "redis", "Cache"),
+    "apache": ("Apache", "apache2", "Servidor web"),
+    "nginx": ("Nginx", "nginx", "Servidor web"),
+    "lighttpd": ("Lighttpd", "lighttpd", "Servidor web"),
+    
+    # UTILITÁRIOS / SISTEMA
+    "virtualbox": ("VirtualBox", "virtualbox", "Virtualização"),
+    "qemu": ("QEMU", "qemu", "Virtualização"),
+    "gnome-boxes": ("GNOME Boxes", "gnome-boxes", "Virtualização"),
+    "virt-manager": ("Virt Manager", "virt-manager", "Virtualização"),
+    "boxes": ("GNOME Boxes", "gnome-boxes", "Virtualização"),
+    "keepassxc": ("KeePassXC", "keepassxc", "Gerenciador senhas"),
+    "bitwarden": ("Bitwarden", "bitwarden", "Senhas"),
+    "veracrypt": ("VeraCrypt", "veracrypt", "Criptografia"),
+    "gnupg": ("GPG", "gnupg", "Criptografia"),
+    "openssl": ("OpenSSL", "openssl", "SSL/TLS"),
+    "timeshift": ("Timeshift", "timeshift", "Backup sistema"),
+    "backintime": ("Back In Time", "backintime", "Backup"),
+    "grsync": ("Grsync", "grsync", "Rsync GUI"),
+    "system-config": ("System Config", "system-config-printer", "Impressoras"),
+    "cups": ("CUPS", "cups", "Sistema de impressão"),
+    "hplip": ("HPLIP", "hplip", "Impressoras HP"),
+    "stacer": ("Stacer", "stacer", "Otimizador"),
+    "bleachbit": ("BleachBit", "bleachbit", "Limpeza"),
+    "gparted": ("GParted", "gparted", "Gerenciador de discos"),
+    "gnome-disks": ("Disks", "gnome-disks", "Gerenciador de discos"),
+    "baobab": ("Baobab", "baobab", "Uso de disco"),
+    "filelight": ("Filelight", "filelight", "Uso de disco"),
+    "htop": ("Htop", "htop", "Monitor de processos"),
+    "btop": ("Btop", "btop", "Monitor de recursos"),
+    "bashtop": ("Bashtop", "bashtop", "Monitor de recursos"),
+    "nvtop": ("NVTOP", "nvtop", "Monitor GPU NVIDIA"),
+    "wireshark": ("Wireshark", "wireshark", "Sniffer de rede"),
+    "nmap": ("Nmap", "nmap", "Scanner de rede"),
+    
+    # COMPACTADORES / ARQUIVOS
     "7zip": ("7-Zip", "p7zip-full", "Compactador"),
+    "winrar": ("7-Zip", "p7zip-full", "Compactador"),
+    "peazip": ("PeaZip", "peazip", "Compactador"),
+    "ark": ("Ark", "ark", "Compactador KDE"),
+    "file-roller": ("File Roller", "file-roller", "Compactador GNOME"),
+    "xarchiver": ("Xarchiver", "xarchiver", "Compactador"),
+    "engrampa": ("Engrampa", "engrampa", "Compactador MATE"),
+    
+    # PDF / DOCUMENTOS
+    "evince": ("Evince", "evince", "Leitor PDF GNOME"),
+    "okular": ("Okular", "okular", "Leitor PDF KDE"),
+    "zathura": ("Zathura", "zathura", "Leitor PDF minimalista"),
+    "foxit": ("Foxit", "foxitreader", "Leitor PDF"),
+    "pdfarranger": ("PDF Arranger", "pdfarranger", "Editar PDF"),
+    "pdftk": ("PDFtk", "pdftk", "Ferramentas PDF"),
+    "poppler": ("Poppler Utils", "poppler-utils", "Ferramentas PDF"),
+    "libreoffice-draw": ("LibreOffice Draw", "libreoffice-draw", "PDF/Desenho"),
+    
+    # ACESSO REMOTO
+    "anydesk": ("AnyDesk", "anydesk", "Acesso remoto"),
+    "teamviewer": ("TeamViewer", "teamviewer", "Acesso remoto"),
+    "parsec": ("Parsec", "parsec", "Jogar remotamente"),
+    "sunshine": ("Sunshine", "sunshine", "Game streaming"),
+    "moonlight": ("Moonlight", "moonlight", "Game streaming"),
+    "remmina": ("Remmina", "remmina", "Escritório remoto"),
+    "vinagre": ("Vinagre", "vinagre", "Escritório remoto"),
+    "krdc": ("KRDC", "krdc", "Escritório remoto KDE"),
+    "nomachine": ("NoMachine", "nomachine", "Acesso remoto"),
+    "x2go": ("X2Go", "x2goclient", "Acesso remoto"),
+    "sshfs": ("SSHFS", "sshfs", "Montar remote"),
+    
+    # CLOUD / STORAGE
+    "dropbox": ("Dropbox", "dropbox", "Cloud storage"),
+    "google-drive": ("Google Drive", "google-drive-ocamlfuse", "Cloud storage"),
+    "mega": ("MEGA", "megasync", "Cloud storage"),
+    "onedrive": ("OneDrive", "onedrive", "Cloud storage"),
+    "insync": ("Insync", "insync", "Google Drive"),
+    "rclone": ("Rclone", "rclone", "Cloud CLI"),
+    
+    # VIRTUALIZAÇÃO / EMULAÇÃO
+    "dosbox": ("DOSBox", "dosbox", "Emulador DOS"),
+    "dosemu": ("DOSEMU", "dosemu", "Emulador DOS"),
+    "scummvm": ("ScummVM", "scummvm", "Emulador jogos antigos"),
+    "retroarch": ("RetroArch", "retroarch", "Emulador multi-sistema"),
+    "pcsx2": ("PCSX2", "pcsx2", "Emulador PlayStation 2"),
+    "ppsspp": ("PPSSPP", "ppsspp", "Emulador PSP"),
+    "rpcs3": ("RPCS3", "rpcs3", "Emulador PS3"),
+    "citra": ("Citra", "citra", "Emulador 3DS"),
+    "yuzu": ("Yuzu", "yuzu", "Emulador Switch"),
+    "ryujinx": ("Ryujinx", "ryujinx", "Emulador Switch"),
+    "xenia": ("Xenia", "xenia", "Emulador Xbox"),
+    
+    # FONTS / TIPOGRAFIA
+    "fonts": ("Font Manager", "font-manager", "Gerenciador de fontes"),
+    
+    # clipboards
+    "clipit": ("ClipIt", "clipit", "Clipboard"),
+    "diodon": ("Diodon", "diodon", "Clipboard"),
+    "klipper": ("Klipper", "klipper", "Clipboard KDE"),
+    
+    # SCREENSHOTS
+    "spectacle": ("Spectacle", "spectacle", "Screenshot KDE"),
+    "gnome-screenshot": (" GNOME Screenshot", "gnome-screenshot", "Screenshot GNOME"),
+    "flameshot": ("Flameshot", "flameshot", "Screenshot"),
+    "shutter": ("Shutter", "shutter", "Screenshot"),
+    
+    # LAUNCHERS
+    "krunner": ("KRunner", "krunner", "Lançador KDE"),
+    "ulauncher": ("ULauncher", "ulauncher", "Lançador"),
+    "albert": ("Albert", "albert", "Lançador"),
+    "synapse": ("Synapse", "synapse", "Lançador"),
+    "kupfer": ("Kupfer", "kupfer", "Lançador"),
+    "wofi": ("Wofi", "wofi", "Lançador Wayland"),
+    "dmenu": ("dmenu", "dmenu", "Lançador"),
+    "rofi": ("Rofi", "rofi", "Lançador/App launcher"),
+    
+    # DESKTOP / WINDOW MANAGERS
+    "kwin": ("KWin", "kwin", "Window Manager KDE"),
+    "mutter": ("Mutter", "mutter", "Window Manager GNOME"),
+    "compton": ("Compton", "compton", "Compositor"),
+    "picom": ("Picom", "picom", "Compositor"),
+    
+    # THEMING / CUSTOMIZATION
+    "kvantum": ("Kvantum", "kvantum", "Tema Qt"),
+    "materia": ("Materia", "materia-gtk-theme", "Tema GTK"),
+    "arc": ("Arc Theme", "arc-theme", "Tema GTK"),
+    "adapta": ("Adapta", "adapta-gtk-theme", "Tema GTK"),
+    "numix": ("Numix", "numix-gtk-theme", "Tema GTK"),
+    "oomox": ("Oomox", "oomox", "Criador de temas"),
+    "lxappearance": ("LXAppearance", "lxappearance", "Aparência LXDE"),
+    "oguriskb": ("Oculus", "oguriskb", "Teclado"),
+    
+    # TOOLS / UTILS
+    "wine": ("Wine", "wine", "Executar Windows"),
+    "winetricks": ("Winetricks", "winetricks", "Auxiliar Wine"),
+    "playonlinux": ("PlayOnLinux", "playonlinux", "Jogos Windows"),
+    "bottles": ("Bottles", "bottles", "Ambientes Windows"),
+    "crossover": ("CrossOver", "crossover", "Windows compatibility"),
 }
 
 
@@ -124,23 +413,43 @@ def get_install_cmd(package):
     return f"sudo apt install {package}"
 
 
-def update_cache():
+def update_cache(silent=False):
     try:
         import requests
         import base64
         os.makedirs(CACHE_DIR, exist_ok=True)
+        
         r = github_get(f"{API}/contents/data/ports/ports.json")
-        if r and r.status_code == 200:
-            content = r.json()["content"]
-            data = base64.b64decode(content).decode()
-            with open(CACHE_FILE, 'w') as f:
-                f.write(data)
-            print(f"✅ Cache atualizado! ({len(data)} bytes)")
-            return True
-        print(f"⚠️  Arquivo ports.json não encontrado")
-        return False
+        if not r or r.status_code != 200:
+            if not silent:
+                print("⚠️  Arquivo ports.json não encontrado ou token não configurado")
+            return False
+        
+        remote_sha = r.json()["sha"]
+        remote_content = base64.b64decode(r.json()["content"]).decode()
+        
+        # Verificar se já tem cache local
+        if os.path.exists(CACHE_FILE):
+            with open(CACHE_FILE) as f:
+                local_content = f.read()
+            
+            # Se conteúdo igual, não precisa atualizar
+            if local_content == remote_content:
+                if not silent:
+                    print("ℹ️  Cache já está atualizado")
+                return False
+        
+        # Salvar novo cache
+        with open(CACHE_FILE, 'w') as f:
+            f.write(remote_content)
+        
+        if not silent:
+            print(f"✅ Cache atualizado! ({len(remote_content)} bytes)")
+        return True
+        
     except Exception as e:
-        print(f"❌ Erro ao atualizar cache: {e}")
+        if not silent:
+            print(f"❌ Erro ao atualizar cache: {e}")
         return False
 
 
@@ -280,6 +589,7 @@ class CRYPy(QWidget):
     def __init__(self, exe_path=None):
         super().__init__()
         self.exe = exe_path
+        self.was_updated = update_cache(silent=True)
         self.data = analyze(exe_path) if exe_path else None
         self.setWindowTitle("CRYPy")
         self.setFixedSize(420, 260)
@@ -296,6 +606,12 @@ class CRYPy(QWidget):
         self.title = QLabel("🔍 CRYPy")
         self.title.setObjectName("title")
         self.title.setAlignment(Qt.AlignCenter)
+        
+        self.update_label = QLabel("")
+        self.update_label.setAlignment(Qt.AlignCenter)
+        if self.was_updated:
+            self.update_label.setText("🔄 Banco atualizado!")
+            self.update_label.setStyleSheet("color: #22c55e; font-size: 11px;")
         
         self.info_label = QLabel("Clique com botão direito em um .exe")
         self.info_label.setAlignment(Qt.AlignCenter)
@@ -316,6 +632,7 @@ class CRYPy(QWidget):
         self.request_btn = QPushButton("📨 Solicitar Suporte")
         
         main_layout.addWidget(self.title)
+        main_layout.addWidget(self.update_label)
         main_layout.addWidget(self.info_label)
         main_layout.addLayout(btn_layout)
         main_layout.addWidget(line)
@@ -415,12 +732,53 @@ lutris -i {install_dir}/installer.yml &
             self.close()
     
     def send_request_action(self):
-        if self.data:
-            ok = send_request(self.data.get("app", self.data["clean_name"]))
+        if not self.data:
+            return
+        
+        app_name = self.data.get("original", self.data.get("clean_name", ""))
+        
+        dialog = QDialog(self)
+        dialog.setWindowTitle("📨 Solicitar Suporte")
+        dialog.setFixedSize(400, 300)
+        dialog.setStyleSheet("""
+            QDialog { background-color: #1e1e2e; color: #ffffff; }
+            QLabel { color: #ffffff; }
+            QTextEdit { background-color: #2a2a3a; color: #ffffff; border: 1px solid #3a3a5a; border-radius: 4px; padding: 8px; }
+            QPushButton { background-color: #6366f1; color: #fff; border: none; border-radius: 6px; padding: 8px 16px; }
+            QPushButton:hover { background-color: #818cf8; }
+        """)
+        
+        layout = QVBoxLayout(dialog)
+        layout.setSpacing(15)
+        
+        layout.addWidget(QLabel(f"📦 {app_name}"))
+        layout.addWidget(QLabel("Por que você quer este programa?"))
+        
+        text_edit = QTextEdit()
+        text_edit.setPlaceholderText("Ex: Quero jogar este jogo no Linux...")
+        layout.addWidget(text_edit)
+        
+        btn_layout = QHBoxLayout()
+        btn_layout.addStretch()
+        
+        cancel_btn = QPushButton("Cancelar")
+        cancel_btn.setStyleSheet("background-color: #3a3a5a;")
+        cancel_btn.clicked.connect(dialog.close)
+        btn_layout.addWidget(cancel_btn)
+        
+        send_btn = QPushButton("Enviar")
+        send_btn.clicked.connect(dialog.accept)
+        btn_layout.addWidget(send_btn)
+        
+        layout.addLayout(btn_layout)
+        
+        if dialog.exec():
+            note = text_edit.toPlainText().strip()
+            ok = send_request(app_name, note)
             if ok:
-                QMessageBox.information(self, "OK", "Solicitação enviada!")
+                QMessageBox.information(self, "✅ Enviado!", "Solicitação enviada com sucesso!")
             else:
-                QMessageBox.warning(self, "Erro", "Configure o token GitHub em ~/.config/crypy/token")
+                QMessageBox.warning(self, "❌ Erro", "Configure o token GitHub:\necho 'SEU_TOKEN' > ~/.config/crypy/token")
     
     def get_style(self):
         return """
