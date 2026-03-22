@@ -824,7 +824,7 @@ lutris -i {install_dir}/installer.yml &
             if ok:
                 QMessageBox.information(self, "✅ Enviado!", "Solicitação enviada com sucesso!")
             else:
-                QMessageBox.warning(self, "❌ Erro", "Configure o token GitHub:\necho 'SEU_TOKEN' > ~/.config/compatflow/token")
+                QMessageBox.warning(self, "❌ Erro", "Falha ao enviar relatório. Verifique sua conexão.")
     
     def get_style(self):
         return """
@@ -878,8 +878,7 @@ if __name__ == "__main__":
         if download_update():
             print("✅ Atualização baixada! Reinicie o CompatFlow.")
         else:
-            print("❌ Falha na atualização. Configure o token GitHub.")
-            print("   echo 'seu_token' > ~/.config/compatflow/token")
+            print("❌ Falha na atualização. Verifique sua conexão.")
         sys.exit(0)
     
     if "--test" in sys.argv:
