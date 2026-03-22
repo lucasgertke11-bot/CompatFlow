@@ -1,9 +1,12 @@
 # 🔍 CompatFlow - Verificador de Compatibilidade Windows → Linux
 
+![CompatFlow](compatflow.svg)
+
 **CompatFlow** é um aplicativo que ajuda usuários vindos do Windows a encontrar versões nativas de seus programas favoritos no Linux.
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
+![License](https://img.shields.io/badge/License-GPL--3.0-green)
+![Platform](https://img.shields.io/badge/Platform-Linux-blue)
 
 ---
 
@@ -24,51 +27,58 @@ O CompatFlow verifica automaticamente:
 
 | Recurso | Descrição |
 |---------|-----------|
-| 🔍 **Detecção automática** | Identifica qualquer arquivo `.exe` |
+| 🔍 **Detecção automática** | Identifica qualquer arquivo `.exe` ou `.msi` |
 | 🐧 **275+ apps nativos** | Firefox, Discord, VS Code, Steam e muito mais |
 | 🎮 **Ports via Lutris** | Instalação automática de jogos Windows |
 | 🍷 **Wine integrado** | Executa programas que não têm alternativa |
 | 📤 **Sistema de reports** | Solicite suporte para apps não encontrados |
 | 🔄 **Atualização automática** | Banco de dados sempre atualizado |
 | 🌐 **Multi-distro** | Arch, Ubuntu, Fedora, openSUSE... |
+| 🖥️ **Multi-ambiente** | Suporta Dolphin, Nautilus, Thunar, Files |
 
 ---
 
 ## 📦 Instalação
 
-### Método 1: Clone e instale
+### Instalação rápida
+
 ```bash
-git clone https://github.com/lucasgertke11-bot/compatflow.git
-cd compatflow
+git clone https://github.com/lucasgertke11-bot/CompatFlow.git
+cd CompatFlow
 sudo bash install-compatflow.sh
 ```
 
-### Método 2: Apenas configure o token
+Depois reinicie o gerenciador de arquivos:
 ```bash
-# Configure seu token GitHub
-echo "SEU_TOKEN" > ~/.config/compatflow/token
+# KDE Dolphin
+killall dolphin; dolphin &
 
-# Atualize o banco de dados
-compatflow --update
+# GNOME Nautilus
+nautilus -q
+
+# XFCE Thunar
+thunar -q
 ```
 
 ---
 
 ## 🎮 Como Usar
 
-1. **Clique com botão direito** em qualquer arquivo `.exe`
-2. Selecione **"🔍 Verificar Disponibilidade"**
+1. **Clique com botão direito** em qualquer arquivo `.exe` ou `.msi`
+2. Selecione **"🔍 Verificar com CompatFlow"**
 3. O CompatFlow detecta automaticamente:
 
 ```
-✅ Nativo Linux disponível
-   → Clique "Instalar Nativo"
-
-🎮 Port via Lutris disponível
-   → Clique "Instalar Port"
-
-❌ Não encontrado
-   → Clique "Solicitar Suporte"
+┌─────────────────────────────────────┐
+│ ✅ Nativo Linux disponível          │
+│    → Clique "🐧 Instalar Nativo"     │
+├─────────────────────────────────────┤
+│ 🎮 Port via Lutris disponível       │
+│    → Clique "🎮 Instalar Port"      │
+├─────────────────────────────────────┤
+│ ❌ Não encontrado                    │
+│    → Clique "📨 Solicitar Suporte"   │
+└─────────────────────────────────────┘
 ```
 
 ---
@@ -76,13 +86,16 @@ compatflow --update
 ## 📁 Estrutura do Projeto
 
 ```
-compatflow/
-├── compatflow.py              # Aplicativo principal
-├── install-compatflow.sh     # Script de instalação
+CompatFlow/
+├── compatflow.py              # Aplicativo principal (Python/PySide6)
+├── compatflow.svg             # Ícone do aplicativo
+├── compatflow.desktop         # Entrada no menu do sistema
+├── install-compatflow.sh      # Script de instalação
 ├── uninstall-compatflow.sh    # Script de desinstalação
-├── backups/              # Backups de versões
-├── README_DEV.md         # Documentação para desenvolvedores
-└── version.json         # Controle de versão
+├── README.md                  # Documentação
+├── README_DEV.md              # Documentação para desenvolvedores
+├── version.json               # Controle de versão
+└── backups_compatflow/        # Backups de versões
 ```
 
 ---
@@ -91,35 +104,41 @@ compatflow/
 
 O banco de dados de ports está em: [distroforge-database](https://github.com/lucasgertke11-bot/distroforge-database)
 
-### Adicionar um novo jogo/port
+### Gerenciadores de arquivos suportados
 
-Consulte o [README_DEV.md](README_DEV.md) para documentação completa.
+| Ambiente | Gerenciador | Status |
+|----------|-------------|--------|
+| 🐧 KDE | Dolphin | ✅ |
+| 🎨 GNOME | Nautilus | ✅ |
+| ⚡ XFCE | Thunar | ✅ |
+| 🖥️ GTK | Files (Nemo, Caja, PCManFM) | ✅ |
 
 ---
 
 ## 🔧 Comandos
 
 ```bash
-compatflow --update        # Atualizar banco de dados
-compatflow --check-update  # Verificar nova versão
-compatflow --upgrade       # Atualizar próprio CompatFlow
-compatflow --test arquivo.exe  # Testar detecção
+compatflow                    # Abrir interface gráfica
+compatflow arquivo.exe       # Verificar arquivo específico
+compatflow --update           # Atualizar banco de dados
+compatflow --check-update    # Verificar nova versão
+compatflow --upgrade         # Atualizar próprio CompatFlow
 ```
 
 ---
 
 ## 🎯 Para Quem é?
 
-- **Usuários migrating do Windows** para Linux
+- **Usuários migrando do Windows** para Linux
 - **Iniciantes** em Linux que querem facilitar
 - **Gamers** que querem jogar no Linux
-- **Profissionais** que precisam de compatibilidade
+- **Profissionais** que precisam de compatibilidade Windows
 
 ---
 
-## 🔄 Atualização de Banco
+## 🔄 Atualização
 
-O banco de dados é atualizado automaticamente quando você abre o CompatFlow. Para forçar atualização:
+O CompatFlow atualiza o banco de dados automaticamente. Para forçar atualização:
 
 ```bash
 compatflow --update
@@ -132,7 +151,7 @@ compatflow --update
 Encontrou um programa que não está no banco?
 
 1. Abra o `.exe` com o CompatFlow
-2. Clique em **"Solicitar Suporte"**
+2. Clique em **"📨 Solicitar Suporte"**
 3. Escreva por que você quer esse programa
 4. O desenvolvedor será notificado!
 
@@ -140,10 +159,14 @@ Encontrou um programa que não está no banco?
 
 ## 📄 Licença
 
-MIT License - Livre para usar, modificar e distribuir.
+GPL-3.0 License - Livre para usar, modificar e distribuir.
 
 ---
 
+<div align="center">
+
 **Feito com ❤️ para ajudar na migração Windows → Linux**
 
-**Desenvolvido por:** lucasgertke11-bot
+**Desenvolvido por:** [lucasgertke11-bot](https://github.com/lucasgertke11-bot)
+
+</div>
