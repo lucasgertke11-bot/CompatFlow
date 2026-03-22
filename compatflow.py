@@ -447,14 +447,27 @@ def update_cache(silent=False):
         import base64
         os.makedirs(CACHE_DIR, exist_ok=True)
         
-        r = github_get(f"{API}/contents/data/ports/ports.json")
-        if not r or r.status_code != 200:
-            if not silent:
-                print("⚠️  Arquivo ports.json não encontrado ou token não configurado")
-            return False
+        remote_content = None
         
-        remote_sha = r.json()["sha"]
-        remote_content = base64.b64decode(r.json()["content"]).decode()
+        # Tenta Supabase primeiro
+        content = supabase_download("ports/ports.json")
+        if content:
+            remote_content = content
+            if not silent:
+                print("📦 Cache baixado do Supabase")
+        
+        # Fallback GitHub
+        if not remote_content:
+            r = github_get(f"{API}/contents/data/ports/ports.json")
+            if r and r.status_code == 200:
+                remote_content = base64.b64decode(r.json()["content"]).decode()
+                if not silent:
+                    print("📦 Cache baixado do GitHub (fallback)")
+        
+        if not remote_content:
+            if not silent:
+                print("⚠️  Arquivo ports.json não encontrado")
+            return False
         
         # Verificar se já tem cache local
         if os.path.exists(CACHE_FILE):
