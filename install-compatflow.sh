@@ -1,11 +1,11 @@
 #!/bin/bash
 # ============================================
-# CRYPy - Instalador (Menu apenas)
+# CompatFlow - Instalador (Menu apenas)
 # ============================================
 
 echo ""
 echo "╔═══════════════════════════════════════╗"
-echo "║    🔍 CRYPy - Instalador           ║"
+echo "║    🔍 CompatFlow - Instalador           ║"
 echo "╚═══════════════════════════════════════╝"
 echo ""
 
@@ -16,15 +16,15 @@ fi
 
 # Copiar aplicativo
 echo "[1/4] Copiando aplicativo..."
-mkdir -p /opt/crypy
-cp /home/cas1/distroforge_studio/crypy/crypy.py /opt/crypy/crypy.py
+mkdir -p /opt/compatflow
+cp /home/cas1/distroforge_studio/compatflow/compatflow.py /opt/compatflow/compatflow.py
 
-cat > /usr/bin/crypy << 'EOF'
+cat > /usr/bin/compatflow << 'EOF'
 #!/bin/bash
-cd /opt/crypy
-python3 crypy.py "$@"
+cd /opt/compatflow
+python3 compatflow.py "$@"
 EOF
-chmod +x /usr/bin/crypy
+chmod +x /usr/bin/compatflow
 echo "✓ Aplicativo instalado"
 
 # KDE Dolphin
@@ -32,7 +32,7 @@ echo ""
 echo "[2/4] Configurando menu Dolphin..."
 mkdir -p ~/.local/share/kservices5
 
-cat > ~/.local/share/kservices5/CRYPy.desktop << 'EOF'
+cat > ~/.local/share/kservices5/CompatFlow.desktop << 'EOF'
 [Desktop Entry]
 Type=Service
 ServiceTypes=KonqPopupMenu/Plugin
@@ -42,9 +42,9 @@ Actions=verificar
 [Desktop Action verificar]
 Name=🔍 Verificar Disponibilidade
 Icon=system-software-update
-Exec=/usr/bin/crypy %f
+Exec=/usr/bin/compatflow %f
 EOF
-chmod +x ~/.local/share/kservices5/CRYPy.desktop
+chmod +x ~/.local/share/kservices5/CompatFlow.desktop
 echo "✓ Menu Dolphin configurado"
 
 # GNOME Nautilus
@@ -53,7 +53,7 @@ echo "[3/4] Configurando menu Nautilus..."
 mkdir -p ~/.local/share/nautilus/scripts
 cat > ~/.local/share/nautilus/scripts/"🔍 Verificar Disponibilidade" << 'EOF'
 #!/bin/bash
-/usr/bin/crypy "$@"
+/usr/bin/compatflow "$@"
 EOF
 chmod +x ~/.local/share/nautilus/scripts/"🔍 Verificar Disponibilidade"
 echo "✓ Menu Nautilus configurado"
@@ -65,14 +65,14 @@ mkdir -p ~/.config/Thunar
 if [ ! -f ~/.config/Thunar/uca.xml ]; then
     echo '<?xml version="1.0" encoding="UTF-8"?><actions>' > ~/.config/Thunar/uca.xml
 fi
-if ! grep -q "CRYPy" ~/.config/Thunar/uca.xml 2>/dev/null; then
+if ! grep -q "CompatFlow" ~/.config/Thunar/uca.xml 2>/dev/null; then
     sed -i 's|</actions>||' ~/.config/Thunar/uca.xml
     cat >> ~/.config/Thunar/uca.xml << 'EOF'
 
   <action>
     <icon>system-software-update</icon>
     <name>🔍 Verificar Disponibilidade</name>
-    <command>/usr/bin/crypy %f</command>
+    <command>/usr/bin/compatflow %f</command>
     <patterns>*</patterns>
     <other-files/>
   </action>
@@ -87,7 +87,7 @@ kbuildsycoca5 --noincremental 2>/dev/null || true
 
 echo ""
 echo "════════════════════════════════════════"
-echo "  ✅ CRYPy INSTALADO!"
+echo "  ✅ CompatFlow INSTALADO!"
 echo "════════════════════════════════════════"
 echo ""
 echo "Como usar:"
@@ -96,4 +96,4 @@ echo ""
 echo "⚠️  Reinicie o Dolphin:"
 echo "  killall dolphin; dolphin &"
 echo ""
-echo "Para desinstalar: sudo ./uninstall-crypy.sh"
+echo "Para desinstalar: sudo ./uninstall-compatflow.sh"

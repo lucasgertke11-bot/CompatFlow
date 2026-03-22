@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CRYPy - Verificador de Compatibilidade + Ports
+CompatFlow - Verificador de Compatibilidade + Ports
 """
 
 import sys
@@ -20,8 +20,8 @@ except:
     sys.exit(1)
 
 API = "https://api.github.com/repos/lucasgertke11-bot/distroforge-database"
-GITHUB_API = "https://api.github.com/repos/lucasgertke11-bot/crypy"
-CACHE_DIR = os.path.expanduser("~/.config/crypy")
+GITHUB_API = "https://api.github.com/repos/lucasgertke11-bot/compatflow"
+CACHE_DIR = os.path.expanduser("~/.config/compatflow")
 TOKEN_FILE = os.path.join(CACHE_DIR, "token")
 CACHE_FILE = os.path.join(CACHE_DIR, "ports.json")
 VERSIONS_FILE = os.path.join(CACHE_DIR, "version.json")
@@ -470,7 +470,7 @@ def download_update():
         os.makedirs(CACHE_DIR, exist_ok=True)
         
         # Baixar arquivos do repo
-        files = ["crypy.py", "install-crypy.sh", "uninstall-crypy.sh", "README_DEV.md"]
+        files = ["compatflow.py", "install-compatflow.sh", "uninstall-compatflow.sh", "README_DEV.md"]
         
         for fname in files:
             r = github_get(f"{GITHUB_API}/contents/{fname}")
@@ -585,13 +585,13 @@ def check_wine():
     return check_installed("wine") or check_installed("winehq-stable") or check_installed("wine-stable")
 
 
-class CRYPy(QWidget):
+class CompatFlow(QWidget):
     def __init__(self, exe_path=None):
         super().__init__()
         self.exe = exe_path
         self.was_updated = update_cache(silent=True)
         self.data = analyze(exe_path) if exe_path else None
-        self.setWindowTitle("CRYPy")
+        self.setWindowTitle("CompatFlow")
         self.setFixedSize(420, 260)
         self.setStyleSheet(self.get_style())
         self.init_ui()
@@ -603,7 +603,7 @@ class CRYPy(QWidget):
         main_layout.setSpacing(12)
         main_layout.setContentsMargins(15, 15, 15, 15)
         
-        self.title = QLabel("🔍 CRYPy")
+        self.title = QLabel("🔍 CompatFlow")
         self.title.setObjectName("title")
         self.title.setAlignment(Qt.AlignCenter)
         
@@ -694,7 +694,7 @@ class CRYPy(QWidget):
                 
                 script_url = port.get("install", {}).get("script_url")
                 if script_url and self.exe:
-                    install_dir = "/tmp/crypy_install"
+                    install_dir = "/tmp/compatflow_install"
                     os.system(f"rm -rf {install_dir} && mkdir -p {install_dir}")
                     
                     dest_exe = os.path.join(install_dir, "setup.exe")
@@ -717,10 +717,10 @@ class CRYPy(QWidget):
 cd {install_dir}
 lutris -i {install_dir}/installer.yml &
 """
-                    with open("/tmp/crypy_run.sh", "w") as f:
+                    with open("/tmp/compatflow_run.sh", "w") as f:
                         f.write(wrapper)
-                    os.system("chmod +x /tmp/crypy_run.sh")
-                    os.system("bash /tmp/crypy_run.sh &")
+                    os.system("chmod +x /tmp/compatflow_run.sh")
+                    os.system("bash /tmp/compatflow_run.sh &")
                 else:
                     QMessageBox.warning(self, "Erro", "Script ou arquivo não disponível!")
             
@@ -778,7 +778,7 @@ lutris -i {install_dir}/installer.yml &
             if ok:
                 QMessageBox.information(self, "✅ Enviado!", "Solicitação enviada com sucesso!")
             else:
-                QMessageBox.warning(self, "❌ Erro", "Configure o token GitHub:\necho 'SEU_TOKEN' > ~/.config/crypy/token")
+                QMessageBox.warning(self, "❌ Erro", "Configure o token GitHub:\necho 'SEU_TOKEN' > ~/.config/compatflow/token")
     
     def get_style(self):
         return """
@@ -830,10 +830,10 @@ if __name__ == "__main__":
     if "--upgrade" in sys.argv:
         print("Baixando atualização...")
         if download_update():
-            print("✅ Atualização baixada! Reinicie o CRYPy.")
+            print("✅ Atualização baixada! Reinicie o CompatFlow.")
         else:
             print("❌ Falha na atualização. Configure o token GitHub.")
-            print("   echo 'seu_token' > ~/.config/crypy/token")
+            print("   echo 'seu_token' > ~/.config/compatflow/token")
         sys.exit(0)
     
     if "--test" in sys.argv:
@@ -848,11 +848,11 @@ if __name__ == "__main__":
             set_token(sys.argv[2])
             print("✅ Token configurado!")
         else:
-            print("Uso: crypy --set-token SEU_TOKEN")
+            print("Uso: compatflow --set-token SEU_TOKEN")
         sys.exit(0)
     
     app = QApplication(sys.argv)
     exe = sys.argv[1] if len(sys.argv) > 1 else None
-    w = CRYPy(exe)
+    w = CompatFlow(exe)
     w.show()
     sys.exit(app.exec())

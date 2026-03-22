@@ -1,8 +1,8 @@
-# CRYPy - Guia de Desenvolvimento
+# CompatFlow - Guia de Desenvolvimento
 
-## O que é o CRYPy?
+## O que é o CompatFlow?
 
-CRYPy é um verificador de compatibilidade que:
+CompatFlow é um verificador de compatibilidade que:
 - Detecta programas Windows (.exe)
 - Verifica se existe versão nativa Linux
 - Verifica se existe "port" (instalação via Lutris)
@@ -13,10 +13,10 @@ CRYPy é um verificador de compatibilidade que:
 ## Estrutura do Projeto
 
 ```
-crypy/
-├── crypy.py              # Aplicativo principal
-├── install-crypy.sh      # Script de instalação
-├── uninstall-crypy.sh    # Script de desinstalação
+compatflow/
+├── compatflow.py              # Aplicativo principal
+├── install-compatflow.sh      # Script de instalação
+├── uninstall-compatflow.sh    # Script de desinstalação
 └── README_DEV.md        # Este arquivo
 ```
 
@@ -28,9 +28,9 @@ crypy/
 ```
 Usuário clica em VioletSetup.exe
        ↓
-CRYPy extrai nome: "violet"
+CompatFlow extrai nome: "violet"
        ↓
-Busca no cache local (~/.config/crypy/ports.json)
+Busca no cache local (~/.config/compatflow/ports.json)
        ↓
 Encontra correspondência → mostra "Port via LUTRIS"
 ```
@@ -39,13 +39,13 @@ Encontra correspondência → mostra "Port via LUTRIS"
 ```
 Clica em "Instalar Port"
        ↓
-CRYPy copia VioletSetup.exe → /tmp/crypy_install/setup.exe
+CompatFlow copia VioletSetup.exe → /tmp/compatflow_install/setup.exe
        ↓
 Baixa script YML do GitHub
        ↓
 Modifica YML: $SCRIPTDIR/setup.exe
        ↓
-Executa: lutris -i /tmp/crypy_install/installer.yml
+Executa: lutris -i /tmp/compatflow_install/installer.yml
        ↓
 Lutris instala o jogo automaticamente
 ```
@@ -135,10 +135,10 @@ Edite o arquivo `data/ports/ports.json` no GitHub:
 
 ```bash
 # Atualizar cache local
-crypy --update
+compatflow --update
 
 # Testar detecção
-crypy --test /caminho/ate/jogo.exe
+compatflow --test /caminho/ate/jogo.exe
 ```
 
 ---
@@ -199,17 +199,17 @@ script:
 ## Comandos Úteis
 
 ```bash
-# Atualizar cache do CRYPy
-crypy --update
+# Atualizar cache do CompatFlow
+compatflow --update
 
 # Testar detecção de arquivo
-crypy --test /caminho/até/arquivo.exe
+compatflow --test /caminho/até/arquivo.exe
 
 # Verificar cache local
-cat ~/.config/crypy/ports.json
+cat ~/.config/compatflow/ports.json
 
 # Limpar cache
-rm ~/.config/crypy/ports.json
+rm ~/.config/compatflow/ports.json
 ```
 
 ---
@@ -255,7 +255,7 @@ rm ~/.config/crypy/ports.json
 
 - [Documentação Lutris](https://github.com/lutris/lutris/blob/master/docs/installers.rst)
 - [Site Lutris](https://lutris.net/)
-- [Repositório CRYPy](https://github.com/lucasgertke11-bot/distroforge-database)
+- [Repositório CompatFlow](https://github.com/lucasgertke11-bot/distroforge-database)
 
 ---
 
@@ -265,8 +265,8 @@ rm ~/.config/crypy/ports.json
 1. Você: Cria script YML do jogo
 2. Você: Hospeda no GitHub
 3. Você: Adiciona entrada no ports.json
-4. CRYPy: Usuário atualiza cache (--update)
-5. CRYPy: Detecta automaticamente
-6. CRYPy: Copia exe → modifica YML → executa Lutris
+4. CompatFlow: Usuário atualiza cache (--update)
+5. CompatFlow: Detecta automaticamente
+6. CompatFlow: Copia exe → modifica YML → executa Lutris
 7. Lutris: Instala o jogo
 ```

@@ -1,6 +1,6 @@
-# 🔍 CRYPy - Verificador de Compatibilidade Windows → Linux
+# 🔍 CompatFlow - Verificador de Compatibilidade Windows → Linux
 
-**CRYPy** é um aplicativo que ajuda usuários vindos do Windows a encontrar versões nativas de seus programas favoritos no Linux.
+**CompatFlow** é um aplicativo que ajuda usuários vindos do Windows a encontrar versões nativas de seus programas favoritos no Linux.
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
@@ -11,7 +11,7 @@
 
 Você está migrando do Windows para o Linux e encontrou um `.exe` que quer instalar?
 
-O CRYPy verifica automaticamente:
+O CompatFlow verifica automaticamente:
 - ✅ Se existe versão **nativa Linux** desse programa
 - 🎮 Se existe **port via Lutris** (para jogos)
 - 🍷 Se pode rodar com **Wine**
@@ -38,18 +38,18 @@ O CRYPy verifica automaticamente:
 
 ### Método 1: Clone e instale
 ```bash
-git clone https://github.com/lucasgertke11-bot/crypy.git
-cd crypy
-sudo bash install-crypy.sh
+git clone https://github.com/lucasgertke11-bot/compatflow.git
+cd compatflow
+sudo bash install-compatflow.sh
 ```
 
 ### Método 2: Apenas configure o token
 ```bash
 # Configure seu token GitHub
-echo "SEU_TOKEN" > ~/.config/crypy/token
+echo "SEU_TOKEN" > ~/.config/compatflow/token
 
 # Atualize o banco de dados
-crypy --update
+compatflow --update
 ```
 
 ---
@@ -58,7 +58,7 @@ crypy --update
 
 1. **Clique com botão direito** em qualquer arquivo `.exe`
 2. Selecione **"🔍 Verificar Disponibilidade"**
-3. O CRYPy detecta automaticamente:
+3. O CompatFlow detecta automaticamente:
 
 ```
 ✅ Nativo Linux disponível
@@ -76,10 +76,10 @@ crypy --update
 ## 📁 Estrutura do Projeto
 
 ```
-crypy/
-├── crypy.py              # Aplicativo principal
-├── install-crypy.sh     # Script de instalação
-├── uninstall-crypy.sh    # Script de desinstalação
+compatflow/
+├── compatflow.py              # Aplicativo principal
+├── install-compatflow.sh     # Script de instalação
+├── uninstall-compatflow.sh    # Script de desinstalação
 ├── backups/              # Backups de versões
 ├── README_DEV.md         # Documentação para desenvolvedores
 └── version.json         # Controle de versão
@@ -100,10 +100,10 @@ Consulte o [README_DEV.md](README_DEV.md) para documentação completa.
 ## 🔧 Comandos
 
 ```bash
-crypy --update        # Atualizar banco de dados
-crypy --check-update  # Verificar nova versão
-crypy --upgrade       # Atualizar próprio CRYPy
-crypy --test arquivo.exe  # Testar detecção
+compatflow --update        # Atualizar banco de dados
+compatflow --check-update  # Verificar nova versão
+compatflow --upgrade       # Atualizar próprio CompatFlow
+compatflow --test arquivo.exe  # Testar detecção
 ```
 
 ---
@@ -119,10 +119,10 @@ crypy --test arquivo.exe  # Testar detecção
 
 ## 🔄 Atualização de Banco
 
-O banco de dados é atualizado automaticamente quando você abre o CRYPy. Para forçar atualização:
+O banco de dados é atualizado automaticamente quando você abre o CompatFlow. Para forçar atualização:
 
 ```bash
-crypy --update
+compatflow --update
 ```
 
 ---
@@ -131,7 +131,7 @@ crypy --update
 
 Encontrou um programa que não está no banco?
 
-1. Abra o `.exe` com o CRYPy
+1. Abra o `.exe` com o CompatFlow
 2. Clique em **"Solicitar Suporte"**
 3. Escreva por que você quer esse programa
 4. O desenvolvedor será notificado!

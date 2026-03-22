@@ -1,11 +1,11 @@
 #!/bin/bash
 # ============================================
-# CRYPy - Desinstalador
+# CompatFlow - Desinstalador
 # ============================================
 
 echo ""
 echo "╔═══════════════════════════════════════╗"
-echo "║    🗑️ CRYPy - Desinstalador       ║"
+echo "║    🗑️ CompatFlow - Desinstalador       ║"
 echo "╚═══════════════════════════════════════╝"
 echo ""
 
@@ -15,11 +15,11 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 echo "Removendo aplicativo..."
-rm -rf /opt/crypy
-rm -f /usr/bin/crypy
+rm -rf /opt/compatflow
+rm -f /usr/bin/compatflow
 
 echo "Removendo menus KDE..."
-rm -f ~/.local/share/kservices5/CRYPy.desktop
+rm -f ~/.local/share/kservices5/CompatFlow.desktop
 rm -f ~/.local/share/kservices5/Crypt*.desktop
 
 echo "Removendo menus GNOME..."
@@ -31,10 +31,10 @@ if [ -f ~/.config/Thunar/uca.xml ]; then
 fi
 
 echo "Removendo associações..."
-rm -f /usr/share/applications/crypy.desktop
+rm -f /usr/share/applications/compatflow.desktop
 rm -f /usr/share/applications/crypt.desktop
 
 echo ""
 echo "════════════════════════════════════════"
-echo "  ✅ CRYPy DESINSTALADO!"
+echo "  ✅ CompatFlow DESINSTALADO!"
 echo "════════════════════════════════════════"
