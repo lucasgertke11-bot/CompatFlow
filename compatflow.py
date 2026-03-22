@@ -25,6 +25,8 @@ except:
 
 API = "https://api.github.com/repos/lucasgertke11-bot/distroforge-database"
 GITHUB_API = "https://api.github.com/repos/lucasgertke11-bot/compatflow"
+SUPABASE_URL = "https://ztxafyatsdxwhflyblyk.supabase.co"
+SUPABASE_KEY = "sb_secret_zlsybS0xSeAM_4xzjgMVog_wA7--HMt"
 CACHE_DIR = os.path.expanduser("~/.config/compatflow")
 TOKEN_FILE = os.path.join(CACHE_DIR, "token")
 CACHE_FILE = os.path.join(CACHE_DIR, "ports.json")
@@ -57,6 +59,31 @@ def github_put(url, data):
     import requests
     r = requests.put(url, json=data, headers={"Authorization": f"token {token}"}, timeout=10)
     return r
+
+
+def supabase_download(path):
+    url = f"{SUPABASE_URL}/storage/v1/object/public/compatflow/{path}"
+    try:
+        resp = requests.get(url, timeout=15)
+        if resp.status_code == 200:
+            return resp.text
+    except:
+        pass
+    return None
+
+
+def supabase_upload(path, content, content_type="text/plain"):
+    url = f"{SUPABASE_URL}/storage/v1/object/compatflow/{path}"
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": content_type
+    }
+    try:
+        resp = requests.post(url, data=content.encode() if isinstance(content, str) else content, headers=headers)
+        return resp.status_code in (200, 201)
+    except:
+        return False
 
 
 NATIVE = {
@@ -456,6 +483,12 @@ def update_cache(silent=False):
 
 def check_update():
     try:
+        # Tenta Supabase primeiro
+        content = supabase_download("updates/version.json")
+        if content:
+            return json.loads(content)
+        
+        # Fallback GitHub
         r = github_get(f"{GITHUB_API}/contents/version.json")
         if r and r.status_code == 200:
             import base64
@@ -470,17 +503,25 @@ def download_update():
     try:
         os.makedirs(CACHE_DIR, exist_ok=True)
         
-        # Baixar arquivos do repo
+        # Arquivos para baixar
         files = ["compatflow.py", "install-compatflow.sh", "uninstall-compatflow.sh", "README_DEV.md"]
         
+        # Tenta Supabase primeiro
         for fname in files:
-            r = github_get(f"{GITHUB_API}/contents/{fname}")
-            if r and r.status_code == 200:
-                import base64
-                content = base64.b64decode(r.json()["content"]).decode()
+            content = supabase_download(f"updates/{fname}")
+            if content:
                 with open(os.path.join(CACHE_DIR, fname), 'w') as f:
                     f.write(content)
-                print(f"✅ {fname} baixado")
+                print(f"✅ {fname} baixado (Supabase)")
+            else:
+                # Fallback GitHub
+                r = github_get(f"{GITHUB_API}/contents/{fname}")
+                if r and r.status_code == 200:
+                    import base64
+                    content = base64.b64decode(r.json()["content"]).decode()
+                    with open(os.path.join(CACHE_DIR, fname), 'w') as f:
+                        f.write(content)
+                    print(f"✅ {fname} baixado (GitHub)")
         
         # Atualizar versão
         ver = check_update()
