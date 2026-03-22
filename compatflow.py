@@ -601,9 +601,12 @@ def send_request(app_name, note=""):
     }
     
     try:
-        resp = requests.post(url, data=json.dumps(data, indent=2), headers=headers)
+        resp = requests.post(url, data=json.dumps(data, indent=2), headers=headers, timeout=10)
+        if resp.status_code not in (200, 201):
+            print(f"ERRO: {resp.status_code} - {resp.text}", file=sys.stderr)
         return resp.status_code in (200, 201)
-    except:
+    except Exception as e:
+        print(f"ERRO requests: {e}", file=sys.stderr)
         return False
 
 
