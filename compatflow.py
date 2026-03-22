@@ -435,45 +435,48 @@ def update_cache(silent=False):
         import base64
         os.makedirs(CACHE_DIR, exist_ok=True)
         
-        remote_content = None
-        
-        # Tenta Supabase primeiro
-        content = supabase_download("ports/ports.json")
-        if content:
-            remote_content = content
-            if not silent:
-                print("📦 Cache baixado do Supabase")
-        
-        # Fallback GitHub
+        # Primeiro: verificar apenas a versão remote
+        remote_content = supabase_download("ports/ports.json")
         if not remote_content:
             r = github_get(f"{API}/contents/data/ports/ports.json")
             if r and r.status_code == 200:
+                import base64
                 remote_content = base64.b64decode(r.json()["content"]).decode()
-                if not silent:
-                    print("📦 Cache baixado do GitHub (fallback)")
         
         if not remote_content:
             if not silent:
                 print("⚠️  Arquivo ports.json não encontrado")
             return False
         
-        # Verificar se já tem cache local
+        # Extrair versão do remote
+        try:
+            remote_data = json.loads(remote_content)
+            remote_version = remote_data.get("_meta", {}).get("version", "0.0.0")
+        except:
+            remote_version = "0.0.0"
+        
+        # Verificar versão local
+        local_version = "0.0.0"
         if os.path.exists(CACHE_FILE):
-            with open(CACHE_FILE) as f:
-                local_content = f.read()
-            
-            # Se conteúdo igual, não precisa atualizar
-            if local_content == remote_content:
-                if not silent:
-                    print("ℹ️  Cache já está atualizado")
-                return False
+            try:
+                with open(CACHE_FILE) as f:
+                    local_data = json.load(f)
+                    local_version = local_data.get("_meta", {}).get("version", "0.0.0")
+            except:
+                pass
+        
+        # Comparar versões
+        if remote_version <= local_version:
+            if not silent:
+                print(f"ℹ️  Ports já estão atualizados (v{local_version})")
+            return False
         
         # Salvar novo cache
         with open(CACHE_FILE, 'w') as f:
             f.write(remote_content)
         
         if not silent:
-            print(f"✅ Cache atualizado! ({len(remote_content)} bytes)")
+            print(f"✅ Ports atualizados para v{remote_version}!")
         return True
         
     except Exception as e:
