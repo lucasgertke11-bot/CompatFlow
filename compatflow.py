@@ -7,8 +7,12 @@ import sys
 import os
 import json
 import hashlib
+import requests
 from datetime import datetime
 import subprocess
+
+SUPABASE_URL = "https://ztxafyatsdxwhflyblyk.supabase.co"
+SUPABASE_KEY = "sb_secret_zlsybS0xSeAM_4xzjgMVog_wA7--HMt"
 
 try:
     from PySide6.QtWidgets import (QApplication, QWidget, QLabel, QPushButton,
@@ -542,20 +546,23 @@ def analyze(exe_path):
 
 
 def send_request(app_name, note=""):
-    import requests, base64
+    import base64
     data = {"app": app_name, "note": note, "date": datetime.now().isoformat()}
-    encoded = base64.b64encode(json.dumps(data, indent=2).encode()).decode()
     checksum = hashlib.md5(app_name.encode()).hexdigest()[:8]
-    filename = f"{checksum}_{app_name}.json"
-    url = f"{API}/contents/data/requests/{filename}"
+    filename = f"requests/{checksum}_{app_name}.json"
     
-    r = github_get(url)
-    payload = {"message": f"Request: {app_name}", "content": encoded}
-    if r and r.status_code == 200:
-        payload["sha"] = r.json()["sha"]
+    url = f"{SUPABASE_URL}/storage/v1/object/compatflow/{filename}"
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": "application/json"
+    }
     
-    r = github_put(url, payload)
-    return r.status_code in [200, 201, 204] if r else False
+    try:
+        resp = requests.post(url, data=json.dumps(data, indent=2), headers=headers)
+        return resp.status_code in (200, 201)
+    except:
+        return False
 
 
 def check_installed(package):
