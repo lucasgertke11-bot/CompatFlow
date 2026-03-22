@@ -35,7 +35,45 @@ mkdir -p /usr/share/icons/hicolor/scalable/apps
 cp "$SCRIPT_DIR/compatflow.svg" /usr/share/icons/hicolor/scalable/apps/compatflow.svg 2>/dev/null || true
 cp "$SCRIPT_DIR/compatflow.svg" ~/.local/share/icons/compatflow.svg 2>/dev/null || true
 gtk-update-icon-cache ~/.local/share/icons/ 2>/dev/null || true
+
+mkdir -p ~/.local/share/applications
+cat > ~/.local/share/applications/compatflow.desktop << 'EOF'
+[Desktop Entry]
+Type=Application
+Name=CompatFlow
+Comment=Verificar compatibilidade Windows → Linux
+Exec=/usr/bin/compatflow %f
+Icon=compatflow
+MimeType=application/x-executable;application/x-ms-executable;application/x-msi;application/vnd.microsoft.portable-executable;application/x-ms-dos-executable;application/octet-stream;application/x-ms-shortcut;
+Terminal=false
+NoDisplay=true
+EOF
+chmod +x ~/.local/share/applications/compatflow.desktop
+
+update-desktop-database ~/.local/share/applications 2>/dev/null || true
 echo "✓ Ícone instalado"
+
+echo ""
+echo "[2.5/6] Associando MIME types (universal)..."
+for mime in application/x-executable application/x-ms-executable application/x-msi application/vnd.microsoft.portable-executable application/x-ms-dos-executable application/octet-stream; do
+    xdg-mime default compatflow.desktop "$mime" 2>/dev/null || true
+done
+
+mkdir -p /usr/share/applications
+cat > /usr/share/applications/compatflow.desktop << 'EOF'
+[Desktop Entry]
+Type=Application
+Name=CompatFlow
+Comment=Verificar compatibilidade Windows → Linux
+Exec=/usr/bin/compatflow "%f"
+Icon=compatflow
+MimeType=application/x-executable;application/x-ms-executable;application/x-msi;application/vnd.microsoft.portable-executable;application/x-ms-dos-executable;application/octet-stream;application/x-ms-shortcut;
+Terminal=false
+NoDisplay=true
+EOF
+chmod +x /usr/share/applications/compatflow.desktop
+update-desktop-database /usr/share/applications 2>/dev/null || true
+echo "✓ MIME types associados"
 
 echo ""
 echo "[3/6] Configurando KDE Dolphin..."
